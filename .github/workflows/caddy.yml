@@ -1,10 +1,15 @@
-name: Release docker image
+name: Caddy2
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Source Repository Tag"
+      builder-tag:
+        description: "Tag for Caddy Builder"
         required: true
+        default: "2-builder-alpine"
+      tag:
+        description: "Tag for Caddy"
+        required: true
+        default: "2-alpine"
 
 jobs:
   build-docker:
@@ -28,11 +33,12 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          context: ./caddy
           build-args: |
-            TAG=${{ inputs.tag }} 
-            REPOSITORY=pymumu/smartdns
+            BUILDER_TAG=${{ inputs.builder-tag }}
+            TAG=${{ inputs.tag }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/smartdns:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/smartdns:${{ inputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/caddy:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/caddy:${{ inputs.tag }}
